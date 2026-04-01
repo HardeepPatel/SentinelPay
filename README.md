@@ -8,7 +8,9 @@ SentinelPay is an intelligent, agentic payment security system that intercepts a
 
 ## 🦀 What is OpenClaw?
 
-**OpenClaw** is the AI brain of SentinelPay. It is a generic, model-agnostic reasoning framework that sits between the Policy Engine and the final decision.
+**OpenClaw** is a free and open-source autonomous artificial intelligence agent that can execute tasks via large language models, originally designed to use messaging platforms as its main user interface.
+
+In **SentinelPay**, we have adapted the OpenClaw agent to serve as our core AI reasoning engine. It sits directly between the deterministic Policy Engine and the final transaction decision, acting as a model-agnostic risk evaluator.
 
 When a transaction clears all hard policy rules but still feels *off* — high spend, unusual vendor, suspicious justification — **OpenClaw takes over**. It evaluates the full transaction context and produces a structured forensic decision with:
 
