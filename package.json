@@ -1,7 +1,7 @@
 {
   "name": "sentinelpay",
   "version": "1.0.0",
-  "main": "index.js",
+  "main": "src/security-agent.js",
   "scripts": {
     "start": "node src/security-agent.js",
     "eval": "node scripts/eval-harness.js"
