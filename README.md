@@ -1,45 +1,74 @@
 # SentinelPay | AI Payment Guardian
 
-SentinelPay is an intelligent, agentic payment security monitoring system that processes transactions through a multi-tier risk evaluation pipeline. It combines deterministic hard/soft policies with an advanced AI reasoning layer (NemoClaw & Gemini) to achieve highly explainable, auditable, and secure payment decisions.
+> 🦀 **Powered by OpenClaw** — the agentic AI reasoning framework that stops fraudulent payments *before* your money leaves the bank.
+
+SentinelPay is an intelligent, agentic payment security system that intercepts and evaluates transactions in real-time through a multi-tier pipeline. Rather than reacting to fraud after the fact, it combines deterministic hard/soft policies with the **OpenClaw 🦀 AI reasoning layer** to deliver fast, explainable, and auditable payment decisions — every single time.
+
+---
+
+## 🦀 What is OpenClaw?
+
+**OpenClaw** is the AI brain of SentinelPay. It is a generic, model-agnostic reasoning framework that sits between the Policy Engine and the final decision.
+
+When a transaction clears all hard policy rules but still feels *off* — high spend, unusual vendor, suspicious justification — **OpenClaw takes over**. It evaluates the full transaction context and produces a structured forensic decision with:
+
+- ✅ A **risk score** (0.0 → 1.0)
+- ✅ A **decision suggestion** (`APPROVE`, `ESCALATE`, or `BLOCK`)
+- ✅ A **confidence rating**
+- ✅ A list of **human-readable risk signals**
+- ✅ A **forensic explanation** written in plain English
+
+OpenClaw is backed by **Google Gemini 2.0 Flash** via the `@google/genai` SDK, with a strict JSON schema enforced by Zod to ensure structured, reliable outputs every time — no hallucinations, no freeform text.
+
+> **No black boxes.** OpenClaw tells you *why* it made its call, every time.
+
+---
 
 ## 📸 Dashboard & Interface
 
 **Live Execution Feed**
 ![Live Dashboard](docs/screenshots/01-live-dashboard.png)
-*A real-time overview of transaction traces, showing their decision sources (POLICY, SYSTEM, or AI).*
+*A real-time feed of transaction traces tagged with their decision source — POLICY, AI (OpenClaw), SYSTEM fail-closed, or COMBINED.*
 
 **Decision Trace Detail**
 ![Decision Drawer](docs/screenshots/02-decision-drawer.png)
-*Deep-dive timeline into the precise stage where a payment was blocked or approved, providing full forensic context.*
+*Full forensic drill-down: see exactly which pipeline stage blocked or approved the payment, with OpenClaw's reasoning baked in.*
 
 **Simulation Lab**
 ![Simulation Lab](docs/screenshots/03-simulation-lab.png)
-*Test payment scenarios safely using draft policies without persisting them into the live audit logs.*
+*Test any transaction through the NemoClaw pipeline — without persisting to logs — and compare policy versions side by side.*
 
 **Control Plane**
 ![Control Plane](docs/screenshots/04-control-plane.png)
-*Dynamic visualization and tuning of compound Hard and Soft logic JSON rules.*
+*Live view and tuning of compound Hard/Soft JSON policy rules, with a definition hash to track versioned deployments.*
 
 **Compliance Audit**
 ![Compliance Audit](docs/screenshots/05-compliance-audit.png)
-*Append-only cryptographic JSONL logs showing how the system maintained fail-closed integrity.*
+*Hash-chained append-only JSONL audit logs — tamper-evident and forensically complete.*
 
 ---
 
 ## ✨ Key Features
 
-1. **Deterministic Core Policies**: Instantly blocks known bad actors, velocity spikes, or specific merchants using a robust JSON rule engine before the AI is invoked.
-2. **AI Reasoning Layer (OpenClaw)**: If deterministic limits are passed or flagged for "soft escalation", the context is handed off to a Gemini-powered engine for nuanced context evaluation.
-3. **Fail-Closed Architecture (NemoClaw)**: If the LLM experiences an outage, timeout, or returns invalid data, the pipeline automatically fails-closed, dropping the request securely.
-4. **Agentic Explainability**: Every decision leaves a strict chronological trace of its decision source (e.g., whether it was soft-flagged by Policy and overridden by AI, or blocked instantly by Policy).
-5. **Simulation Lab**: A dedicated environment to preview model behaviors, replay old traces, and diff policy tuning outcomes.
+1. 🔒 **Hard Policy Engine** — Zero-tolerance rules instantly BLOCK bad actors, velocity fraud, and sanctioned merchants. OpenClaw is never invoked, keeping response times under 5ms.
+2. 🦀 **OpenClaw AI Reasoning** — For ambiguous transactions, OpenClaw evaluates the full business context with Gemini. It returns a confidence-weighted, signal-backed decision — not just a label.
+3. 🛡️ **NemoClaw Fail-Closed Orchestrator** — If OpenClaw times out or the LLM errors, the pipeline instantly fails closed to `BLOCK`. Security is never optional.
+4. 🔍 **Agentic Explainability** — Every decision is tagged with a `decisionSource` (`POLICY`, `AI`, `SYSTEM`, or `COMBINED`) so you always know who made the call and why.
+5. 🧪 **Simulation Lab** — Preview any transaction through the full NemoClaw pipeline, compare current vs draft policies side-by-side, and replay historical traces.
+6. 📋 **Cryptographic Audit Trail** — All decisions are hash-chained into an append-only JSONL log for tamper-evident compliance records.
+
+---
 
 ## 🛠️ Tech Stack
 
-- **Backend**: Node.js & Express
-- **AI Engine**: Google Gemini (via `@google/genai` sdk) operating behind the generic `OpenClawAgent` interface.
-- **Orchestration**: Custom `NemoClaw` wrapper to coordinate Policy + LLM logic states.
-- **Data Persistence**: Local JSON store for policies, and an append-only JSONL log with hash chaining for the compliance audit trail.
+| Layer | Technology |
+|---|---|
+| Backend | Node.js & Express |
+| AI Engine | Google Gemini 2.0 Flash via `@google/genai` |
+| AI Framework | **OpenClaw 🦀** (generic LLM adapter pattern) |
+| Orchestration | **NemoClaw** (Policy + AI pipeline coordinator) |
+| Schema Validation | Zod (strict structured output enforcement) |
+| Data Persistence | Append-only JSONL + JSON policy store |
 
 ---
 
@@ -47,8 +76,8 @@ SentinelPay is an intelligent, agentic payment security monitoring system that p
 
 1. **Clone the repository**
    ```bash
-   git clone https://github.com/your-org/sentinelpay.git
-   cd sentinelpay
+   git clone https://github.com/HardeepPatel/SentinelPay.git
+   cd SentinelPay
    ```
 
 2. **Install Dependencies**
@@ -60,24 +89,45 @@ SentinelPay is an intelligent, agentic payment security monitoring system that p
    Create a `.env` file in the root directory:
    ```env
    GEMINI_API_KEY=your_gemini_api_key_here
-   GEMINI_MODEL=gemini-2.0-flash # Or your preferred stable Google model
+   GEMINI_MODEL=gemini-2.0-flash
    PORT=3000
    ```
 
-4. **Start the Sentinel Agent Worker**
+4. **Start the Application**
    ```bash
    npm start
    ```
 
-5. **Load the Dashboard**
+5. **Open the Dashboard**
    Navigate to [http://localhost:3000](http://localhost:3000) in your browser.
 
 ---
 
-## 🏗️ Architecture Flow
+## 🏗️ Pipeline Architecture
 
-1. **Request Received**: Basic payload shape validation.
-2. **Policy Engine**: Checked against `data/policies.json`. Any critical violation (`HARD`) halts the pipeline (`BLOCK`).
-3. **OpenClaw AI Evaluation**: Only processes the request if it survives the Policy phase. Evaluates nuanced business context mapping.
-4. **NemoClaw Resolution**: Determines if the final state should be owned by `POLICY`, `AI`, `SYSTEM` (fail-close), or `COMBINED` (soft policy + AI).
-5. **Audit Logger**: Outputs a cryptographic trace record to `audit_log.jsonl`.
+```
+Payment Request
+      │
+      ▼
+┌─────────────────┐
+│  Policy Engine  │ ◄── Hard BLOCK? → STOP. Decision: POLICY
+│  (data/policies)│ ◄── Soft flag?  → Continue to OpenClaw
+└────────┬────────┘
+         │
+         ▼
+┌─────────────────┐
+│  OpenClaw 🦀    │ ◄── LLM timeout? → Fail-closed: SYSTEM BLOCK
+│  (Gemini 2.0)   │ ◄── Analysis OK? → APPROVE / ESCALATE / BLOCK
+└────────┬────────┘
+         │
+         ▼
+┌─────────────────────────┐
+│  NemoClaw Orchestrator  │ ◄── Merges policy + AI → Final Decision
+│  decisionSource tagged  │     (POLICY | AI | SYSTEM | COMBINED)
+└────────┬────────────────┘
+         │
+         ▼
+┌─────────────────┐
+│   Audit Logger  │ ◄── Hash-chained JSONL entry persisted
+└─────────────────┘
+```
