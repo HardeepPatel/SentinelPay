@@ -1,0 +1,22 @@
+{
+  "name": "sentinelpay",
+  "version": "1.0.0",
+  "main": "index.js",
+  "scripts": {
+    "start": "node src/security-agent.js",
+    "eval": "node scripts/eval-harness.js"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "description": "",
+  "dependencies": {
+    "@google/genai": "^1.47.0",
+    "dotenv": "^17.3.1",
+    "express": "^5.2.1",
+    "nemoclaw": "^0.1.0",
+    "openclaw": "^0.0.1",
+    "uuid": "^13.0.0",
+    "zod": "^4.3.6"
+  }
+}

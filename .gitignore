@@ -1,0 +1,4 @@
+node_modules/
+.env
+audit_log.jsonl
+data/

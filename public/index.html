@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SentinelPay | AI Payment Guardian</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="layout">
+        <aside class="sidebar">
+            <div class="brand">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+                <span>SentinelPay</span>
+            </div>
+            <nav class="nav-links">
+                <a href="#dashboard" class="nav-btn active" data-target="view-dashboard">Live Executions</a>
+                <a href="#simulate" class="nav-btn" data-target="view-simulate">Simulation Lab</a>
+                <a href="#policies" class="nav-btn" data-target="view-policies">Control Plane</a>
+                <a href="#audit" class="nav-btn" data-target="view-audit">Compliance Audit</a>
+            </nav>
+            <div class="simulation-panel" id="sim-panel">
+                <h4>Quick Presets</h4>
+                <p>Trigger preset flows through NemoClaw and persist to the audit log.</p>
+                <button class="sim-btn approve-btn" data-scenario="coffee">☕ Safe Coffee ($5)</button>
+                <button class="sim-btn block-btn" data-scenario="high_value">🚨 High Velocity ($60k)</button>
+                <button class="sim-btn block-btn" data-scenario="blocked">🛑 Blocked Merchant</button>
+            </div>
+        </aside>
+
+        <main class="main-content">
+            <!-- VIEW: LIVE DASHBOARD -->
+            <section id="view-dashboard" class="view-section active">
+                <header>
+                    <div class="header-row">
+                        <div>
+                            <h1>Payment Security Feed</h1>
+                            <p>Inspect whether each decision came from Policy, AI, System fail-closed, or the combined orchestrator.</p>
+                        </div>
+                        <div class="filter-bar" id="source-filter">
+                            <button class="filter-btn active" data-filter="ALL">All</button>
+                            <button class="filter-btn" data-filter="POLICY">Policy</button>
+                            <button class="filter-btn" data-filter="AI">AI</button>
+                            <button class="filter-btn" data-filter="SYSTEM">System</button>
+                            <button class="filter-btn" data-filter="COMBINED">Combined</button>
+                        </div>
+                    </div>
+                </header>
+                <div class="card table-card">
+                    <table class="data-table">
+                        <thead><tr><th>Trace ID</th><th>Timestamp</th><th>User</th><th>Amount</th><th>Source</th><th>Reason</th><th>Decision</th></tr></thead>
+                        <tbody id="audit-table-body"></tbody>
+                    </table>
+                </div>
+            </section>
+
+            <!-- VIEW: SIMULATION LAB -->
+            <section id="view-simulate" class="view-section">
+                <header>
+                    <h1>Simulation Lab</h1>
+                    <p>Test any transaction through the NemoClaw pipeline without persisting to the audit log. Compare policy versions side by side.</p>
+                </header>
+                <div class="sim-lab-grid">
+                    <!-- Presets Column -->
+                    <div class="card sim-presets">
+                        <h3>Presets</h3>
+                        <button class="preset-btn" data-preset="coffee">☕ Coffee ($5)</button>
+                        <button class="preset-btn" data-preset="highValue">💰 High Value ($4,500)</button>
+                        <button class="preset-btn" data-preset="blacklist">🛑 Blacklisted Merchant</button>
+                        <button class="preset-btn" data-preset="smurfing">🎁 Smurfing Pattern</button>
+                    </div>
+                    <!-- Form Column -->
+                    <div class="card sim-form">
+                        <div class="sim-form-header">
+                            <h3>Custom Simulation Builder</h3>
+                            <div class="sim-actions">
+                                <button id="run-sim-btn" class="action-btn">Run Simulation</button>
+                                <button id="compare-btn" class="action-btn compare-btn-style">Compare Policies</button>
+                            </div>
+                        </div>
+                        <p class="context-text" style="font-size:0.8rem; margin-bottom:16px;">Compare the same request across policy versions before deploying changes.</p>
+                        <div class="form-grid">
+                            <label class="form-field"><span>User ID</span><input id="sim-userId" value="u321"/></label>
+                            <label class="form-field"><span>Merchant ID</span><input id="sim-merchantId" value="figma"/></label>
+                            <label class="form-field"><span>Amount</span><input id="sim-amount" type="number" value="1800"/></label>
+                            <label class="form-field"><span>Department</span><input id="sim-department" value="marketing"/></label>
+                            <label class="form-field"><span>Category</span><input id="sim-category" value="saas"/></label>
+                            <label class="form-field"><span>Payment Method</span><input id="sim-paymentMethod" value="card"/></label>
+                            <label class="form-field full-width"><span>Justification</span><input id="sim-justification" value="Team plan renewal"/></label>
+                            <label class="form-field"><span>Burst Count</span><input id="sim-burstCount" type="number" value="0"/></label>
+                            <label class="form-field"><span>Burst Window (min)</span><input id="sim-burstWindow" type="number" value="60"/></label>
+                        </div>
+                    </div>
+                    <!-- Result Column -->
+                    <div class="card sim-result" id="sim-result-panel">
+                        <h3>Result</h3>
+                        <div id="sim-result-content" class="context-text" style="font-size:0.85rem;">Run a simulation to see policy hits, AI reasoning, and the full trace.</div>
+                    </div>
+                </div>
+                <!-- Compare Results -->
+                <div id="compare-results" class="compare-grid" style="display:none;"></div>
+            </section>
+
+            <!-- VIEW: POLICIES -->
+            <section id="view-policies" class="view-section">
+                <header>
+                    <h1>Security Policies Engine</h1>
+                    <p>Dynamic Hard/Soft rules processed strictly before AI handoff.</p>
+                    <div class="badge-row">Active Definition Hash: <span id="policy-version-badge" class="tag neutral">Loading...</span></div>
+                </header>
+                <div class="card">
+                    <h3>Active Policy Set (JSON Array)</h3>
+                    <p class="context-text" style="font-size:0.8rem; margin-bottom: 12px;">Supports compound AND condition arrays. Priority ranks execution order.</p>
+                    <textarea id="policy-editor" spellcheck="false"></textarea>
+                    <button id="save-policies-btn" class="action-btn">Deploy Policy Change</button>
+                    <span id="policy-save-status" style="margin-left:12px; font-size: 0.8rem;"></span>
+                </div>
+            </section>
+
+            <!-- VIEW: AUDIT -->
+            <section id="view-audit" class="view-section">
+                <header>
+                    <h1>Compliance & Forensic Audit</h1>
+                    <p>Immutable reporting tied to SHA256 Hash Chain verification.</p>
+                </header>
+                <div class="metrics-grid" id="metrics-grid"></div>
+                <div class="card" style="margin-top:24px;">
+                    <h3>Recent Immutable Traces</h3>
+                    <table class="data-table">
+                        <thead><tr><th>Trace Ledger ID</th><th>Tamper Evidence</th><th>Target Actions</th></tr></thead>
+                        <tbody id="compliance-table-body"></tbody>
+                    </table>
+                </div>
+            </section>
+        </main>
+
+        <!-- Decision Pipeline Drawer -->
+        <div id="risk-drawer" class="drawer">
+            <div class="drawer-header">
+                <h2>Decision Trace</h2>
+                <button id="close-drawer">&times;</button>
+            </div>
+            <div class="drawer-body">
+                <div class="drawer-summary-grid">
+                    <div><label>Source</label><div id="drawer-source-tag"></div></div>
+                    <div><label>Final Decision</label><div id="drawer-decision-tag"></div></div>
+                </div>
+                <div class="drawer-section">
+                    <div class="drawer-section-title">Request Summary</div>
+                    <div class="drawer-detail-row"><span>Trace ID</span><span id="drawer-trace-id" class="mono"></span></div>
+                    <div class="drawer-detail-row"><span>User</span><span id="drawer-user"></span></div>
+                    <div class="drawer-detail-row"><span>Merchant</span><span id="drawer-merchant"></span></div>
+                    <div class="drawer-detail-row"><span>Amount</span><span id="drawer-amount"></span></div>
+                    <div class="drawer-detail-row"><span>Reason</span><span id="drawer-reason"></span></div>
+                </div>
+                <div class="drawer-section">
+                    <div class="drawer-section-title">Pipeline Timeline</div>
+                    <div id="drawer-timeline" class="pipeline-waterfall"></div>
+                </div>
+                <div class="drawer-section">
+                    <div class="drawer-section-title">Integrity</div>
+                    <div class="integrity-badge" id="drawer-integrity">VERIFYING...</div>
+                    <p id="drawer-hash" class="mono" style="margin-top:12px; font-size:0.7rem; word-break:break-all; color:#64748b;"></p>
+                </div>
+            </div>
+        </div>
+        <div class="drawer-overlay" id="drawer-overlay"></div>
+    </div>
+    <script src="app.js"></script>
+</body>
+</html>
