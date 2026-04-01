@@ -13,7 +13,7 @@ app.use(express.json());
 app.use(express.static(path.join(__dirname, '..', 'public')));
 
 // 1. Initialize the Core AI Adapter
-const llmAdapter = new GeminiSpendAdapter({ timeoutMs: 15000, maxRetries: 1 });
+const llmAdapter = new GeminiSpendAdapter({ timeoutMs: 30000, maxRetries: 3 });
 
 // 2. Inject Adapter into OpenClaw Agent
 const baseAgent = new OpenClawAgent(llmAdapter);

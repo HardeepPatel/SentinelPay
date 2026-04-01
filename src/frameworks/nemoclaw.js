@@ -140,7 +140,9 @@ class NemoClawContainer {
         explanation: `LLM failure: ${e.message}. NemoClaw fail-closed triggered.`
       };
 
-      timeline.push({ step: 2, stage: 'POLICY_ENGINE', status: passedHardRules ? 'PASS' : 'UNKNOWN', message: passedHardRules ? 'No hard violation found' : 'Policy state unknown' });
+      if (!timeline.some(t => t.stage === 'POLICY_ENGINE')) {
+        timeline.push({ step: 2, stage: 'POLICY_ENGINE', status: passedHardRules ? 'PASS' : 'UNKNOWN', message: passedHardRules ? 'No hard violation found' : 'Policy state unknown' });
+      }
       timeline.push({ step: 3, stage: 'OPENCLAW_AI', status: 'TIMEOUT', message: e.message });
       timeline.push({ step: 4, stage: 'NEMOCLAW_ORCHESTRATOR', status: 'BLOCK', message: 'Fail-closed enforced' });
       timeline.push({ step: 5, stage: 'AUDIT_LOGGER', status: persistAudit ? 'WRITTEN' : 'SKIPPED', message: persistAudit ? 'Append-only JSONL entry persisted and hash chained' : 'Simulation mode — no audit persisted' });
