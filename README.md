@@ -8,7 +8,7 @@ SentinelPay is an intelligent, agentic payment security system that intercepts a
 
 ## 🦀 What is SentinelPay Agent?
 
-**SentinelPay Agent** is a free and open-source autonomous artificial intelligence agent that can execute tasks via large language models, originally designed to use messaging platforms as its main user interface.
+**SentinelPay Agent** is a free and open-source autonomous artificial intelligence agent that can execute tasks via large language models.
 
 In **SentinelPay**, we have adapted the SentinelPay Agent agent to serve as our core AI reasoning engine. It sits directly between the deterministic Policy Engine and the final transaction decision, acting as a model-agnostic risk evaluator.
 
