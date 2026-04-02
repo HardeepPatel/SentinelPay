@@ -1,5 +1,5 @@
 const { MockCloudWatchStream } = require('./mock-cloudwatch');
-const { AiAgent } = require('./frameworks/ai-agent');
+const { SentinelPayAgent } = require('./frameworks/ai-agent');
 const { DecisionEngine } = require('./frameworks/decision-engine');
 require('dotenv').config();
 
@@ -8,8 +8,8 @@ require('dotenv').config();
 async function bootstrap() {
   console.log('>>> Bootstrapping SentinelPay Observability Agent (Phase 1) <<<');
 
-  // 1. Initialize the core AiAgent Agent
-  const baseAgent = new AiAgent({
+  // 1. Initialize the core SentinelPay Agent
+  const baseAgent = new SentinelPayAgent({
     name: 'SentinelObservability_v1',
     role: 'Monitors payment infrastructure logs and detects anomalies before cascading failures occur.',
     tools: [

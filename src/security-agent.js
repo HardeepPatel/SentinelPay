@@ -1,7 +1,7 @@
 const express = require('express');
 const fs = require('fs');
 const path = require('path');
-const { AiAgent } = require('./frameworks/ai-agent');
+const { SentinelPayAgent } = require('./frameworks/ai-agent');
 const { DecisionEngine } = require('./frameworks/decision-engine');
 const { GeminiSpendAdapter } = require('./adapters/gemini-adapter');
 const policyStore = require('./utils/policyStore');
@@ -15,8 +15,8 @@ app.use(express.static(path.join(__dirname, '..', 'public')));
 // 1. Initialize the Core AI Adapter
 const llmAdapter = new GeminiSpendAdapter({ timeoutMs: 30000, maxRetries: 3 });
 
-// 2. Inject Adapter into AiAgent Agent
-const baseAgent = new AiAgent(llmAdapter);
+// 2. Inject Adapter into SentinelPay Agent
+const baseAgent = new SentinelPayAgent(llmAdapter);
 
 // 3. Wrap using DecisionEngine pipeline orchestrator
 const securePipeline = new DecisionEngine({ name: 'SecurityPipeline', agent: baseAgent });

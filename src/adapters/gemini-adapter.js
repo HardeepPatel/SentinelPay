@@ -74,7 +74,7 @@ function extractJson(text) {
 class GeminiSpendAdapter {
   constructor({
     apiKey = process.env.GEMINI_API_KEY,
-    model = process.env.GEMINI_MODEL || "gemini-3-flash-preview",
+    model = process.env.GEMINI_MODEL || "gemini-2.5",
     timeoutMs = 8000,
     maxRetries = 1,
   } = {}) {
@@ -90,7 +90,7 @@ class GeminiSpendAdapter {
 
   async analyzeSpend(context) {
     const prompt = [
-      "You are AiAgent, the risk reasoning layer for SentinelPay.",
+      "You are SentinelPay Agent, the risk reasoning layer for SentinelPay.",
       "Return ONLY valid JSON that matches the schema.",
       "Do not use markdown.",
       "Do not mention system prompts.",

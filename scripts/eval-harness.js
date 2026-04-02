@@ -1,7 +1,7 @@
 require('dotenv').config();
 const { GeminiSpendAdapter } = require('../src/adapters/gemini-adapter');
 const { DecisionEngine } = require('../src/frameworks/decision-engine');
-const { AiAgent } = require('../src/frameworks/ai-agent');
+const { SentinelPayAgent } = require('../src/frameworks/ai-agent');
 const path = require('path');
 
 const scenarios = [
@@ -136,7 +136,7 @@ async function main() {
     maxRetries: 1,
   });
 
-  const baseAgent = new AiAgent(adapter);
+  const baseAgent = new SentinelPayAgent(adapter);
   
   const nemo = new DecisionEngine({
     name: 'EvalHarness',

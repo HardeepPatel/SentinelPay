@@ -2,9 +2,9 @@
  * Generic AI Reasoning facade.
  * Now acts as a pass-through structure for the selected LLM Adapter (e.g., Gemini).
  */
-class AiAgent {
+class SentinelPayAgent {
   constructor(adapter) {
-    if (!adapter) throw new Error("AiAgent requires a concrete LLM adapter instance.");
+    if (!adapter) throw new Error("SentinelPay Agent requires a concrete LLM adapter instance.");
     this.adapter = adapter;
     this.name = 'SentinelSecurity_v1';
     this.role = 'Analyzes payment context to determine risk of fraud or anomalous spend behavior.';
@@ -30,4 +30,4 @@ class AiAgent {
   }
 }
 
-module.exports = { AiAgent };
+module.exports = { SentinelPayAgent };
