@@ -1,7 +1,7 @@
 require('dotenv').config();
 const { GeminiSpendAdapter } = require('../src/adapters/gemini-adapter');
-const { NemoClawContainer } = require('../src/frameworks/nemoclaw');
-const { OpenClawAgent } = require('../src/frameworks/openclaw');
+const { DecisionEngine } = require('../src/frameworks/decision-engine');
+const { AiAgent } = require('../src/frameworks/ai-agent');
 const path = require('path');
 
 const scenarios = [
@@ -136,9 +136,9 @@ async function main() {
     maxRetries: 1,
   });
 
-  const baseAgent = new OpenClawAgent(adapter);
+  const baseAgent = new AiAgent(adapter);
   
-  const nemo = new NemoClawContainer({
+  const nemo = new DecisionEngine({
     name: 'EvalHarness',
     agent: baseAgent
   });

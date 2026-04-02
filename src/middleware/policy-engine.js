@@ -25,7 +25,7 @@ function evaluateCondition(condition, request) {
  */
 function evaluatePolicies(request) {
   const policies = policyStore.getAll().filter(p => p.active);
-  // Sort by priority (higher first) for the engine, although NemoClaw handles severity resolution
+  // Sort by priority (higher first) for the engine, although DecisionEngine handles severity resolution
   policies.sort((a, b) => b.priority - a.priority);
 
   const triggered = [];

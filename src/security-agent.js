@@ -1,8 +1,8 @@
 const express = require('express');
 const fs = require('fs');
 const path = require('path');
-const { OpenClawAgent } = require('./frameworks/openclaw');
-const { NemoClawContainer } = require('./frameworks/nemoclaw');
+const { AiAgent } = require('./frameworks/ai-agent');
+const { DecisionEngine } = require('./frameworks/decision-engine');
 const { GeminiSpendAdapter } = require('./adapters/gemini-adapter');
 const policyStore = require('./utils/policyStore');
 require('dotenv').config();
@@ -15,11 +15,11 @@ app.use(express.static(path.join(__dirname, '..', 'public')));
 // 1. Initialize the Core AI Adapter
 const llmAdapter = new GeminiSpendAdapter({ timeoutMs: 30000, maxRetries: 3 });
 
-// 2. Inject Adapter into OpenClaw Agent
-const baseAgent = new OpenClawAgent(llmAdapter);
+// 2. Inject Adapter into AiAgent Agent
+const baseAgent = new AiAgent(llmAdapter);
 
-// 3. Wrap using NemoClaw pipeline orchestrator
-const securePipeline = new NemoClawContainer({ name: 'SecurityPipeline', agent: baseAgent });
+// 3. Wrap using DecisionEngine pipeline orchestrator
+const securePipeline = new DecisionEngine({ name: 'SecurityPipeline', agent: baseAgent });
 
 // Helper: Read the latest logs safely
 const LOG_FILE = path.join(__dirname, '..', 'audit_log.jsonl');
@@ -116,7 +116,7 @@ app.get('/api/audit/:traceId/replay', (req, res) => {
     timeline: record.timeline || [
       { step: 1, stage: 'REQUEST_RECEIVED', status: 'OK', message: 'Payment request accepted' },
       { step: 2, stage: 'POLICY_ENGINE', status: record.passedHardRules ? 'PASS' : 'BLOCK', message: record.traceLog?.step1_policy || 'N/A' },
-      { step: 3, stage: 'OPENCLAW_AI', status: record.passedHardRules ? 'DONE' : 'SKIPPED', message: record.traceLog?.step2_ai || 'N/A' },
+      { step: 3, stage: 'AI_AGENT', status: record.passedHardRules ? 'DONE' : 'SKIPPED', message: record.traceLog?.step2_ai || 'N/A' },
       { step: 4, stage: 'AUDIT_LOGGER', status: 'WRITTEN', message: 'Append-only JSONL entry persisted' }
     ],
     integrity: {

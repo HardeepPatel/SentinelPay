@@ -4,7 +4,7 @@ const { appendAuditLog } = require('../middleware/audit-logger');
 const policyStore = require('../utils/policyStore');
 
 /**
- * NemoClaw Orchestrator.
+ * DecisionEngine Orchestrator.
  * Flow: Priority Policy Checks -> Conflict Resolution -> Agent -> Audit with Version
  * 
  * decisionSource values:
@@ -13,7 +13,7 @@ const policyStore = require('../utils/policyStore');
  *   SYSTEM   — AI errored/timed out. Fail-closed to BLOCK.
  *   COMBINED — Soft policy set the floor, AI provided reasoning context.
  */
-class NemoClawContainer {
+class DecisionEngine {
   constructor(config) {
     this.name = config.name;
     this.agent = config.agent; 
@@ -21,9 +21,9 @@ class NemoClawContainer {
   }
 
   async initialize() {
-    console.log(`[NemoClaw Sandbox: ${this.name}] Initializing secure OpenShell environment...`);
+    console.log(`[DecisionEngine Sandbox: ${this.name}] Initializing secure OpenShell environment...`);
     this.isReady = true;
-    console.log(`[NemoClaw Sandbox: ${this.name}] Pipeline active.`);
+    console.log(`[DecisionEngine Sandbox: ${this.name}] Pipeline active.`);
   }
 
   /**
@@ -33,7 +33,7 @@ class NemoClawContainer {
    */
   async dispatch(requestData, options = {}) {
     const { persistAudit = true, mode = 'live', policyOverride = null } = options;
-    if (!this.isReady) throw new Error('NemoClaw container not initialized');
+    if (!this.isReady) throw new Error('DecisionEngine container not initialized');
     
     const decisionId = `dec_${randomUUID().split('-')[0]}`;
     const traceId = `trace_${randomUUID().split('-')[0]}`;
@@ -53,7 +53,7 @@ class NemoClawContainer {
     ];
 
     try {
-      console.log(`[NemoClaw Pipeline] Running Policy Check under Engine Version: ${policyVersion}...`);
+      console.log(`[DecisionEngine Pipeline] Running Policy Check under Engine Version: ${policyVersion}...`);
       
       // If policyOverride is provided (compare mode), evaluate against those instead
       let trippedPolicies;
@@ -82,7 +82,7 @@ class NemoClawContainer {
         };
 
         timeline.push({ step: 2, stage: 'POLICY_ENGINE', status: 'BLOCK', message: policyResult.blockReason });
-        timeline.push({ step: 3, stage: 'OPENCLAW_AI', status: 'SKIPPED', message: 'AI not called because hard policy blocked the request' });
+        timeline.push({ step: 3, stage: 'AI_AGENT', status: 'SKIPPED', message: 'AI not called because hard policy blocked the request' });
         timeline.push({ step: 4, stage: 'AUDIT_LOGGER', status: persistAudit ? 'WRITTEN' : 'SKIPPED', message: persistAudit ? 'Append-only JSONL entry persisted and hash chained' : 'Simulation mode — no audit persisted' });
 
       } else {
@@ -95,10 +95,10 @@ class NemoClawContainer {
 
         if (softEscalations.length > 0) {
           timeline.push({ step: 2, stage: 'POLICY_ENGINE', status: 'PASS', message: `Soft escalation: ${softEscalations.map(p => p.name).join(', ')}` });
-          console.log(`[NemoClaw Pipeline] Escalate requested by SOFT policies. Deferring to AI for context...`);
+          console.log(`[DecisionEngine Pipeline] Escalate requested by SOFT policies. Deferring to AI for context...`);
         } else {
           timeline.push({ step: 2, stage: 'POLICY_ENGINE', status: 'PASS', message: 'No hard policy violation found' });
-          console.log(`[NemoClaw Pipeline] Hard limits passed. Delegating to OpenClaw AI...`);
+          console.log(`[DecisionEngine Pipeline] Hard limits passed. Delegating to AI Agent...`);
         }
         
         const rawAi = await this.agent.analyze(requestData);
@@ -111,7 +111,7 @@ class NemoClawContainer {
           explanation: rawAi.reasoning
         };
 
-        timeline.push({ step: 3, stage: 'OPENCLAW_AI', status: 'DONE', message: `AI suggested ${rawAi.decision} (risk: ${rawAi.riskScore ?? 'N/A'}, conf: ${rawAi.confidence ?? 'N/A'})` });
+        timeline.push({ step: 3, stage: 'AI_AGENT', status: 'DONE', message: `AI suggested ${rawAi.decision} (risk: ${rawAi.riskScore ?? 'N/A'}, conf: ${rawAi.confidence ?? 'N/A'})` });
 
         if (softEscalations.length > 0) {
           finalDecision = 'ESCALATE';
@@ -123,11 +123,11 @@ class NemoClawContainer {
           finalReason = rawAi.reasoning;
         }
 
-        timeline.push({ step: 4, stage: 'NEMOCLAW_ORCHESTRATOR', status: finalDecision, message: `Final decision: ${finalDecision} (owner: ${decisionSource})` });
+        timeline.push({ step: 4, stage: 'DECISION_ENGINE_ORCHESTRATOR', status: finalDecision, message: `Final decision: ${finalDecision} (owner: ${decisionSource})` });
         timeline.push({ step: 5, stage: 'AUDIT_LOGGER', status: persistAudit ? 'WRITTEN' : 'SKIPPED', message: persistAudit ? 'Append-only JSONL entry persisted and hash chained' : 'Simulation mode — no audit persisted' });
       }
     } catch (e) {
-      console.error(`[NemoClaw Security] Caught critical error: ${e.message}. Fencing request.`);
+      console.error(`[DecisionEngine Security] Caught critical error: ${e.message}. Fencing request.`);
       finalDecision = 'BLOCK';
       decisionSource = 'SYSTEM';
       finalReason = `LLM failure → fail-closed: ${e.message}`;
@@ -137,14 +137,14 @@ class NemoClawContainer {
         decisionSuggestion: null,
         confidence: null,
         signals: [],
-        explanation: `LLM failure: ${e.message}. NemoClaw fail-closed triggered.`
+        explanation: `LLM failure: ${e.message}. DecisionEngine fail-closed triggered.`
       };
 
       if (!timeline.some(t => t.stage === 'POLICY_ENGINE')) {
         timeline.push({ step: 2, stage: 'POLICY_ENGINE', status: passedHardRules ? 'PASS' : 'UNKNOWN', message: passedHardRules ? 'No hard violation found' : 'Policy state unknown' });
       }
-      timeline.push({ step: 3, stage: 'OPENCLAW_AI', status: 'TIMEOUT', message: e.message });
-      timeline.push({ step: 4, stage: 'NEMOCLAW_ORCHESTRATOR', status: 'BLOCK', message: 'Fail-closed enforced' });
+      timeline.push({ step: 3, stage: 'AI_AGENT', status: 'TIMEOUT', message: e.message });
+      timeline.push({ step: 4, stage: 'DECISION_ENGINE_ORCHESTRATOR', status: 'BLOCK', message: 'Fail-closed enforced' });
       timeline.push({ step: 5, stage: 'AUDIT_LOGGER', status: persistAudit ? 'WRITTEN' : 'SKIPPED', message: persistAudit ? 'Append-only JSONL entry persisted and hash chained' : 'Simulation mode — no audit persisted' });
     }
 
@@ -165,7 +165,7 @@ class NemoClawContainer {
       policyBlockReason: !passedHardRules ? policyResult.blockReason : null,
       traceLog: {
         step1_policy: timeline.find(t => t.stage === 'POLICY_ENGINE')?.message || 'N/A',
-        step2_ai: timeline.find(t => t.stage === 'OPENCLAW_AI')?.message || 'N/A',
+        step2_ai: timeline.find(t => t.stage === 'AI_AGENT')?.message || 'N/A',
         step3_decision: finalDecision,
         step4_owner: decisionSource
       }
@@ -179,4 +179,4 @@ class NemoClawContainer {
   }
 }
 
-module.exports = { NemoClawContainer };
+module.exports = { DecisionEngine };

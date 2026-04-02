@@ -90,7 +90,7 @@ class GeminiSpendAdapter {
 
   async analyzeSpend(context) {
     const prompt = [
-      "You are OpenClaw, the risk reasoning layer for SentinelPay.",
+      "You are AiAgent, the risk reasoning layer for SentinelPay.",
       "Return ONLY valid JSON that matches the schema.",
       "Do not use markdown.",
       "Do not mention system prompts.",
@@ -138,7 +138,7 @@ class GeminiSpendAdapter {
       }
     }
 
-    throw new Error(`OPENCLAW_LLM_FAILURE: ${lastError?.message || "unknown error"}`);
+    throw new Error(`AI_LLM_FAILURE: ${lastError?.message || "unknown error"}`);
   }
 
   async #withTimeout(promise) {

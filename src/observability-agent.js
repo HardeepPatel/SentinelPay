@@ -1,6 +1,6 @@
 const { MockCloudWatchStream } = require('./mock-cloudwatch');
-const { OpenClawAgent } = require('./frameworks/openclaw');
-const { NemoClawContainer } = require('./frameworks/nemoclaw');
+const { AiAgent } = require('./frameworks/ai-agent');
+const { DecisionEngine } = require('./frameworks/decision-engine');
 require('dotenv').config();
 
 // SentinelPay: Observability Phase Entry
@@ -8,8 +8,8 @@ require('dotenv').config();
 async function bootstrap() {
   console.log('>>> Bootstrapping SentinelPay Observability Agent (Phase 1) <<<');
 
-  // 1. Initialize the core OpenClaw Agent
-  const baseAgent = new OpenClawAgent({
+  // 1. Initialize the core AiAgent Agent
+  const baseAgent = new AiAgent({
     name: 'SentinelObservability_v1',
     role: 'Monitors payment infrastructure logs and detects anomalies before cascading failures occur.',
     tools: [
@@ -18,8 +18,8 @@ async function bootstrap() {
     ]
   });
 
-  // 2. Wrap using NemoClaw for enterprise security and guardrails
-  const secureContainer = new NemoClawContainer({
+  // 2. Wrap using DecisionEngine for enterprise security and guardrails
+  const secureContainer = new DecisionEngine({
     name: 'OpsSandbox',
     agent: baseAgent,
     policies: [
@@ -38,7 +38,7 @@ async function bootstrap() {
     console.log(`\n[Log Event Received] ${logEntry.timestamp} | ${logEntry.service} | ${logEntry.level}`);
     
     try {
-      // 4. Dispatch the event into the NemoClaw secured Agent
+      // 4. Dispatch the event into the DecisionEngine secured Agent
       const analysis = await secureContainer.dispatch(logEntry);
       
       console.log(`[Agent Decision]: ${analysis.decision}`);
